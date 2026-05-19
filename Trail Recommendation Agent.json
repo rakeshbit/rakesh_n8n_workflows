@@ -1,0 +1,299 @@
+{
+  "name": "Trail Recommendation Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 4
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -432,
+        -48
+      ],
+      "id": "2e87ad74-db9e-4a34-871a-c76765aad531",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Role: You are an expert, weather-aware trail running assistant. Your goal is to deliver an outstanding, beautifully formatted HTML email response that helps me decide whether to go for a trail run today and which trail matches the day's conditions perfectly. Your tone should be friendly, enthusiastic, and concise—like a knowledgeable friend who knows the local trails inside out.\n\nTask: Decide if I should go for a trail run today based on my schedule. If conditions permit, recommend the absolute best trail using time, weather, air quality, and trail attributes, formatting the final recommendation as a clean, visually polished HTML email message. If it is not a good day to run, explain why clearly and stop.\n\nInput: You have access to the following data streams:\n\nMy calendar via the checkCalendar tool (look for an event titled \"Trail Run\" scheduled for today).\n\nThe current weather in Draper, Utah via the getWeather tool.\n\nCurrent air quality (PM2.5-based AQI) via the getAirQuality tool.\n\nA list of trail runs from the getHikeList tool. Each trail includes: Name, Distance (miles), Elevation gain (feet), Estimated time (minutes), and Shade Level (\"Shady\", \"Some Shade\", or \"Exposed\").\n\nTools: Use only these tools to perform your reasoning and take action:\n\ncheckCalendar: Returns today's events.\n\ngetWeather: Returns temperature and conditions in Draper, Utah.\n\ngetAirQuality: Returns an AQI category such as \"Good\", \"Moderate\", \"Unhealthy\", etc., based on PM2.5.\n\ngetHikeList: Returns a list of trails with the fields described above.\n\nsendMessage: Sends me your final recommendation or status message.\n\nConstraints & Decision Logic:\n\nFirst, execute checkCalendar. If there is no event titled \"Trail Run\" today, stop execution immediately and do nothing.\n\nNext, execute getAirQuality. If the category is \"Unhealthy\", \"Very Unhealthy\", or \"Hazardous\", do not recommend a trail. Use sendMessage to send a politely structured HTML alert explaining that the air quality is too poor for a safe run, then stop.\n\nIf air quality is \"Good\" or \"Moderate\", proceed with the analysis.\n\nExecute getWeather. If conditions are very hot or intensely sunny, completely avoid trails marked \"Exposed\" and actively prefer \"Shady\" or \"Some Shade\" trails.\n\nExecute getHikeList and select exactly ONE trail that: fits within the calendar's available time block, perfectly matches today's weather/shade needs, and provides a fresh choice.\n\nIf absolutely no trail fits these constraints, use sendMessage to explain why clearly and politely in a clean HTML format.\n\nOutput Formatting Requirements:\nYour final output via the sendMessage tool must be a fully rendered, inline-styled HTML email snippet (wrapped inside an elegant, modern email card). Do not write a plain text summary. Structure the HTML output exactly as follows:\n<div style=\"font-family: 'Segoe UI', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e0e0e0; border-radius: 12px; background-color: #ffffff; color: #333333; line-height: 1.6;\">\n    <!-- Greeting -->\n    <p style=\"font-size: 16px; margin-top: 0;\">Hey there! 🏃‍♂️</p>\n    \n    <!-- Conditional Weather & AQI Banner Summary -->\n    <div style=\"background-color: #f4f6f8; border-left: 4px solid #4CAF50; padding: 12px 16px; margin-bottom: 20px; border-radius: 0 8px 8px 0;\">\n        <p style=\"margin: 0; font-size: 14px; color: #555555;\">\n            <strong>Today's Conditions:</strong> [Insert Temp/Conditions] | <strong>Air Quality:</strong> [Insert AQI Category]\n        </p>\n    </div>\n\n    <!-- MAIN BODY: Recommendation OR Cancellation Text -->\n    <p style=\"font-size: 15px; margin-bottom: 20px;\">\n        [Insert friendly 1-2 sentence intro stating if it's a great day to run and why you picked this trail based on weather/shade, or your polite explanation if running is canceled today.]\n    </p>\n\n    <!-- TRAIL DETAIL CARD (Only include if a trail is recommended) -->\n    <div style=\"background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: #ffffff; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);\">\n        <h2 style=\"margin: 0 0 12px 0; font-size: 20px; font-weight: 600; letter-spacing: -0.5px;\">☀️ [Insert Trail Name]</h2>\n        <table style=\"width: 100%; border-collapse: collapse; font-size: 14px; color: #e0e6ed;\">\n            <tr>\n                <td style=\"padding: 6px 0; font-weight: bold; color: #ffffff;\">Distance:</td>\n                <td style=\"padding: 6px 0; text-align: right;\">[X.X] miles</td>\n            </tr>\n            <tr>\n                <td style=\"padding: 6px 0; font-weight: bold; color: #ffffff;\">Elevation Gain:</td>\n                <td style=\"padding: 6px 0; text-align: right;\">[XXXX] feet</td>\n            </tr>\n            <tr>\n                <td style=\"padding: 6px 0; font-weight: bold; color: #ffffff;\">Est. Time:</td>\n                <td style=\"padding: 6px 0; text-align: right;\">[XX] mins</td>\n            </tr>\n            <tr>\n                <td style=\"padding: 6px 0; font-weight: bold; color: #ffffff;\">Shade Cover:</td>\n                <td style=\"padding: 6px 0; text-align: right;\">[Shady / Some Shade / Exposed]</td>\n            </tr>\n        </table>\n    </div>\n\n    <!-- Sign-off -->\n    <p style=\"font-size: 14px; color: #777777; margin-bottom: 0; border-top: 1px solid #eeeeee; padding-top: 15px;\">\n        Catch you out there,<br><strong>Your Trail Assistant</strong>\n    </p>\n</div>",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        112,
+        -48
+      ],
+      "id": "9e5e77fe-7434-4042-88cc-39da151c2c60",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -208,
+        176
+      ],
+      "id": "da0f7dba-4e12-4603-aa66-4d193cc47b31",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "339wf51KJURKWfnB",
+          "name": "OpenAI account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "trail-run-session"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -80,
+        176
+      ],
+      "id": "791727e6-a9f4-4ffe-9e65-ecb60414a2b6",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "n8nrakesh@gmail.com",
+          "mode": "list",
+          "cachedResultName": "n8nrakesh@gmail.com"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        48,
+        176
+      ],
+      "id": "5eaa7b28-8ff4-46c9-9097-a68cd900626d",
+      "name": "checkCalendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "XsL9zOBvGMyzx0Vj",
+          "name": "Google Calendar OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "cityName": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('City', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.openWeatherMapTool",
+      "typeVersion": 1,
+      "position": [
+        176,
+        176
+      ],
+      "id": "5c71ee50-77d3-4fb1-8e35-2b05e5c10754",
+      "name": "getWeather",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "i9KDjptUJwPbxY4x",
+          "name": "OpenWeatherMap account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://www.airnowapi.org/aq/observation/zipCode/current/?format=application/json&zipCode=20002&distance=25&API_KEY=4EC1D599-D4E5-4A2A-86E6-1464907E6FC2",
+        "options": {},
+        "optimizeResponse": true
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        304,
+        176
+      ],
+      "id": "2b16d388-d83c-4538-abf9-cee8a07ea224",
+      "name": "getAirQuality"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1t_KxdMWafg_5dY7xjMQnaQOGX6v4HvDm-WfkYqAho1s",
+          "mode": "list",
+          "cachedResultName": "Trails",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t_KxdMWafg_5dY7xjMQnaQOGX6v4HvDm-WfkYqAho1s/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Runs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t_KxdMWafg_5dY7xjMQnaQOGX6v4HvDm-WfkYqAho1s/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        432,
+        176
+      ],
+      "id": "cb17b31d-8b36-4041-98a0-48cb73544c1d",
+      "name": "getHikeList",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Tgv3HiMatbr7WxVe",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "n8nrakesh@gmail.com",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        176
+      ],
+      "id": "66bfeb21-bdf6-4972-95b9-37ed50f2f236",
+      "name": "sendMessage",
+      "webhookId": "ba3c9092-32f0-41c4-9f4c-00eef3c93d77",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "I2tE2FGMOVfQbKNR",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "checkCalendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getWeather": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getAirQuality": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getHikeList": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sendMessage": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "2dbfb939-d1da-4565-9765-8007d85a1711",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "69a72266c349c3d8cfed6e80fd91c9f889e417726d6885c8510c7bfc6103cbb6"
+  },
+  "id": "w3mRR7bO2lUFbT1C",
+  "tags": []
+}
