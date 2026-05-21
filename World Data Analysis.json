@@ -6,8 +6,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -800,
-        -304
+        -784,
+        -336
       ],
       "id": "e15ea710-b7e1-4890-92dc-9ba424970ead",
       "name": "When clicking ‘Execute workflow’"
@@ -30,7 +30,7 @@
           "cachedResultUrl": "https://airtable.com/app1hNy4MmeEICcNK/tblS70P6MtWV5QbiC"
         },
         "returnAll": false,
-        "limit": 5,
+        "limit": 1,
         "options": {},
         "sort": {
           "property": []
@@ -39,8 +39,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        -576,
-        -304
+        -192,
+        -336
       ],
       "id": "e13b4fb5-ca7d-43d6-b138-7d27ed4098b1",
       "name": "Search records",
@@ -59,8 +59,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -352,
-        -304
+        32,
+        -336
       ],
       "id": "ac92a4f1-fc51-496c-a2ae-d42c0b90e236",
       "name": "Code in Python"
@@ -76,8 +76,8 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        -128,
-        -304
+        288,
+        -336
       ],
       "id": "5d79041a-e24d-40de-b8d4-a32280353476",
       "name": "AI Agent"
@@ -96,8 +96,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        -128,
-        -64
+        256,
+        -112
       ],
       "id": "bef24150-51f9-4897-8990-a6521c03bede",
       "name": "OpenAI Chat Model",
@@ -116,8 +116,8 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        0,
-        -64
+        400,
+        -112
       ],
       "id": "d353d88c-c2c1-4215-9253-7a648ec84f9e",
       "name": "Simple Memory"
@@ -141,19 +141,13 @@
           ]
         },
         "builtInTools": {},
-        "options": {
-          "textFormat": {
-            "textOptions": {
-              "type": "json_schema"
-            }
-          }
-        }
+        "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2.3,
       "position": [
-        224,
-        -304
+        672,
+        -400
       ],
       "id": "d4c608d4-4630-4270-b4fb-7faee5822e3b",
       "name": "Message a model",
@@ -162,21 +156,20 @@
           "id": "339wf51KJURKWfnB",
           "name": "OpenAI account 2"
         }
-      },
-      "disabled": true
+      }
     },
     {
       "parameters": {
         "sendTo": "n8nrakesh@gmail.com",
         "subject": "Country Status",
-        "message": "=<div style=\"background-color: #f4f6f8; padding: 40px 20px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333333; line-height: 1.6;\">\n    <div style=\"max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e1e5e8;\">\n        \n        <div style=\"background: linear-gradient(135deg, #4f46e5, #06b6d4); padding: 30px; text-align: center;\">\n            <h1 style=\"color: #ffffff; margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.5px;\">\n                🌍 AI Intelligence Report\n            </h1>\n        </div>\n\n        <div style=\"padding: 40px 35px;\">\n            <div style=\"font-size: 16px; color: #4a5568;\">\n                {{ $('AI Agent').item.json.output.replace(/\\n/g, '<br>').replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>').replace(/### (.*?)(?:<br>|$)/g, '<h3 style=\"color:#1a202c; font-size:20px; margin-top:20px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;\">$1</h3>') }}\n            </div>\n        </div>\n\n        <div style=\"background-color: #fafafa; padding: 20px; text-align: center; font-size: 12px; color: #a0aec0; border-top: 1px solid #edf2f7;\">\n            <p style=\"margin: 0;\">Automated with ⚡ n8n & Agentic AI</p>\n        </div>\n\n    </div>\n</div>",
+        "message": "={{ $('AI Agent').item.json.output }}",
         "options": {}
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        448,
-        -304
+        720,
+        -128
       ],
       "id": "685ce3d6-3d88-48d5-b9bd-bd50afd42b2c",
       "name": "Send a message",
@@ -187,19 +180,27 @@
           "name": "Gmail OAuth2 API"
         }
       }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -576,
+        -336
+      ],
+      "id": "e6e7f4a4-38c5-40ee-af9c-cda3ce9ca86b",
+      "name": "When chat message received",
+      "webhookId": "89e0eea4-b047-44b2-8b80-452cd67e4a3f"
     }
   ],
   "pinData": {},
   "connections": {
     "When clicking ‘Execute workflow’": {
       "main": [
-        [
-          {
-            "node": "Search records",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Search records": {
@@ -267,6 +268,17 @@
           }
         ]
       ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -274,7 +286,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "c6148714-8a78-4e37-9441-085cf0f52c20",
+  "versionId": "bec5c216-8925-48bc-b728-5efd06227bad",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "69a72266c349c3d8cfed6e80fd91c9f889e417726d6885c8510c7bfc6103cbb6"
