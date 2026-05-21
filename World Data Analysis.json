@@ -1,0 +1,284 @@
+{
+  "name": "World Data Analysis",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        -304
+      ],
+      "id": "e15ea710-b7e1-4890-92dc-9ba424970ead",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app1hNy4MmeEICcNK",
+          "mode": "list",
+          "cachedResultName": "countries of the world.csv",
+          "cachedResultUrl": "https://airtable.com/app1hNy4MmeEICcNK"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblS70P6MtWV5QbiC",
+          "mode": "list",
+          "cachedResultName": "Imported table",
+          "cachedResultUrl": "https://airtable.com/app1hNy4MmeEICcNK/tblS70P6MtWV5QbiC"
+        },
+        "returnAll": false,
+        "limit": 5,
+        "options": {},
+        "sort": {
+          "property": []
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -576,
+        -304
+      ],
+      "id": "e13b4fb5-ca7d-43d6-b138-7d27ed4098b1",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "AEDSZh23ZcsuXUTJ",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "# Loop over input items and add a new field called 'my_new_field' to the JSON of each one\nfor item in _items:\n  item[\"json\"][\"my_new_field\"] = 1\nreturn _items"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -352,
+        -304
+      ],
+      "id": "ac92a4f1-fc51-496c-a2ae-d42c0b90e236",
+      "name": "Code in Python"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.fields }}",
+        "options": {
+          "systemMessage": "You are ### 📊 [Country Name] ([Region])\n* **Macro-Economic Profile:** [Provide a 2-sentence summary tracking GDP and sector dependency (Agri/Ind/Service)]\n* **Development Index Analysis:** [Evaluate how health, literacy, and phone infrastructure intersect]\n* **Demographic Dynamics:** [Brief insight into density and population trajectories]\n\n🚨 **Outlier Status:** [None / Mild / Severe] \n* *Reasoning:* [If flagged, state exactly which field or combination of fields makes this country an anomaly. If none, state \"Socioeconomic metrics align with regional averages.\"]a helpful assistant"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -128,
+        -304
+      ],
+      "id": "5d79041a-e24d-40de-b8d4-a32280353476",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -128,
+        -64
+      ],
+      "id": "bef24150-51f9-4897-8990-a6521c03bede",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "339wf51KJURKWfnB",
+          "name": "OpenAI account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "Session ID"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        -64
+      ],
+      "id": "d353d88c-c2c1-4215-9253-7a648ec84f9e",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "images": {
+          "values": []
+        },
+        "modelId": {
+          "__rl": true,
+          "value": "=gpt-4-turbo",
+          "mode": "id"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are an expert Frontend Communications Agent. Your task is to take dynamic country analysis data and output a beautifully styled, single-file HTML document wrapped in a <table> layout for maximum email client compatibility.\n\nCRITICAL RULES:\n1. Do not code block the HTML output; return the raw HTML string or a valid JSON object containing the HTML string.\n2. Absolutely NO external CSS stylesheets. All CSS must be inline.\n3. Keep all text data fully dynamic based on the incoming country payload (Country Name, Region, Profile, Analysis, Outlier Status, and Justification).\n4. Dynamically change the background color of the Outlier Alert box:\n   - If Status is 'Severe' -> Soft Red background (#FEE2E2) with dark red text (#991B1B)\n   - If Status is 'Mild' -> Soft Yellow background (#FEF3C7) with dark yellow text (#92400E)\n   - If Status is 'None' -> Soft Green background (#D1FAE5) with dark green text (#065F46)"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_schema"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        -304
+      ],
+      "id": "d4c608d4-4630-4270-b4fb-7faee5822e3b",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "339wf51KJURKWfnB",
+          "name": "OpenAI account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sendTo": "n8nrakesh@gmail.com",
+        "subject": "Country Status",
+        "message": "=<div style=\"background-color: #f4f6f8; padding: 40px 20px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333333; line-height: 1.6;\">\n    <div style=\"max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e1e5e8;\">\n        \n        <div style=\"background: linear-gradient(135deg, #4f46e5, #06b6d4); padding: 30px; text-align: center;\">\n            <h1 style=\"color: #ffffff; margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.5px;\">\n                🌍 AI Intelligence Report\n            </h1>\n        </div>\n\n        <div style=\"padding: 40px 35px;\">\n            <div style=\"font-size: 16px; color: #4a5568;\">\n                {{ $('AI Agent').item.json.output.replace(/\\n/g, '<br>').replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>').replace(/### (.*?)(?:<br>|$)/g, '<h3 style=\"color:#1a202c; font-size:20px; margin-top:20px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;\">$1</h3>') }}\n            </div>\n        </div>\n\n        <div style=\"background-color: #fafafa; padding: 20px; text-align: center; font-size: 12px; color: #a0aec0; border-top: 1px solid #edf2f7;\">\n            <p style=\"margin: 0;\">Automated with ⚡ n8n & Agentic AI</p>\n        </div>\n\n    </div>\n</div>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        -304
+      ],
+      "id": "685ce3d6-3d88-48d5-b9bd-bd50afd42b2c",
+      "name": "Send a message",
+      "webhookId": "74f639fc-5d45-4f98-81e6-06dc6ceb4bb6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "I2tE2FGMOVfQbKNR",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "Code in Python",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in Python": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c6148714-8a78-4e37-9441-085cf0f52c20",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "69a72266c349c3d8cfed6e80fd91c9f889e417726d6885c8510c7bfc6103cbb6"
+  },
+  "id": "VzrkJ7tiJIViVXu5",
+  "tags": []
+}
