@@ -1,4 +1,4 @@
-# rakesh_n8n_workflows
+# Rakesh_n8n_workflows
 # 🏃‍♂️ Trail Recommendation Agent
 
 ## 📝 Description
